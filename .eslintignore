@@ -1,0 +1,5 @@
+# Ignore build artifacts and benchmarks from ESLint
+dist/
+coverage/
+node_modules/
+bench/

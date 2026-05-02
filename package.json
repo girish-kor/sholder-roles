@@ -1,7 +1,19 @@
 {
   "name": "@sholder/roles",
-  "version": "1.0.0",
-  "description": "Enterprise role orchestration system as automated agents",
+  "version": "1.0.1",
+  "description": "Enterprise role orchestration and workflow automation — a deterministic agent framework implementing CEO, CTO, CFO, COO, CMO, AEO, Architect, Planner, Analyst, Reviewer, and Executor roles for organizational automation and orchestration.",
+  "author": "Girish Kor",
+  "contributors": [
+    "girish-kor <https://github.com/girish-kor>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/girish-kor/sholder-roles.git"
+  },
+  "bugs": {
+    "url": "https://github.com/girish-kor/sholder-roles/issues"
+  },
+  "homepage": "https://github.com/girish-kor/sholder-roles#readme",
   "type": "module",
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/esm/index.js",
@@ -56,16 +68,34 @@
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "prepublishOnly": "npm run clean && npm run build && npm test",
     "prepare": "husky install"
   },
   "keywords": [
-    "ontology",
-    "roles",
-    "agents",
-    "orchestration",
-    "enterprise"
+    "role-orchestration",
+    "enterprise-roles",
+    "agent-framework",
+    "deterministic-agents",
+    "workflow-automation",
+    "business-roles",
+    "organizational-roles",
+    "orchestrator",
+    "role-runtime",
+    "roles-registry",
+    "ceo",
+    "cto",
+    "cfo",
+    "coo",
+    "cmo",
+    "architect",
+    "planner",
+    "analyst",
+    "reviewer",
+    "executor",
+    "aeo",
+    "typescript",
+    "node"
   ],
   "license": "MIT",
   "devDependencies": {
@@ -89,6 +119,9 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "overrides": {
     "esbuild": ">=0.25.0"

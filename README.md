@@ -462,7 +462,7 @@ class CustomAgent extends BaseRoleAgent {
 
 Keep custom roles deterministic, side-effect free, and explicit about dependencies so the execution plan stays predictable.
 
-## BASICS TO ADVANCED — FAQ (God of Developers)
+## FAQ's ?
 
 Q: What is `@sholder/roles` in one line?
 

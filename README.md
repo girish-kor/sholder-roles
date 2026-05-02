@@ -462,6 +462,148 @@ class CustomAgent extends BaseRoleAgent {
 
 Keep custom roles deterministic, side-effect free, and explicit about dependencies so the execution plan stays predictable.
 
+## BASICS TO ADVANCED — FAQ (God of Developers)
+
+Q: What is `@sholder/roles` in one line?
+
+- A: A deterministic role orchestration library with built-in enterprise agents and an engine/orchestrator/runtime to register, plan, and execute dependent roles.
+
+Q: How do I install and which Node version is required?
+
+- A: `npm install @sholder/roles` — requires Node.js 18+; package ships as ESM with a CJS build and type declarations.
+
+Q: Quickstart: run all default roles with minimal code?
+
+- A: Create `new RoleRuntime()` and call `executeAll({ context: {}, params: {} })` for a zero-config run with bundled agents.
+
+Q: I only want a subset of roles — how?
+
+- A: Use `RoleRegistry` + `Orchestrator`: register chosen agents and call `orchestrator.run(['CEO','CTO'], input)` to control scope and concurrency.
+
+Q: How are dependencies resolved and executed deterministically?
+
+- A: Each agent exposes `metadata.dependencies`; `ExecutionEngine` topologically sorts nodes into deterministic stages and the orchestrator executes ready stages in order.
+
+Q: How does context merging work across roles?
+
+- A: The orchestrator merges each `output.result` into accumulated context using `mergeContext`, enabling downstream roles to read required values.
+
+Q: How to author a custom role safely?
+
+- A: Extend `BaseRoleAgent`, declare `metadata` (id, dependencies), keep `run/init/validate` deterministic and side-effect free, then register with `RoleRegistry`.
+
+Q: What about TypeScript typings and `RoleId` union?
+
+- A: The package exports types; built-in `RoleId` covers bundled roles — for custom ids, keep local type adapters or widen your application types.
+
+Q: Can I use this library in both ESM and CJS codebases?
+
+- A: Yes — prefer ESM imports in modern projects; use the CJS build if your environment requires `require()`.
+
+Q: How to test roles and orchestration behavior?
+
+- A: Unit-test individual agents by mocking inputs/outputs; integration-test `ExecutionEngine`/`Orchestrator` with a small `RoleRegistry` and deterministic mock agents (see `tests/`).
+
+Q: How to tune concurrency, timeouts, and retries?
+
+- A: Configure `Orchestrator` with `maxConcurrency`, `timeoutMs`, and `retryLimit`; toggle `strict` to control abort-on-failure behavior.
+
+Q: Any performance best practices?
+
+- A: Avoid CPU-heavy synchronous work in agents, batch large payloads, and size `maxConcurrency` to the runtime's throughput; stage grouping reduces unnecessary waits.
+
+Q: How to bundle for browser or Deno usage?
+
+- A: The library is Node-first; for browser/Deno, create a thin adapter exposing the minimal runtime API and bundle with Rollup/Esbuild, shimming Node APIs as needed.
+
+Q: How are side-effects and secrets handled?
+
+- A: Keep side-effects explicit and audit them; do not store secrets in plain `context`/`params` — use encrypted stores or environment configs.
+
+Q: What about versioning and API compatibility?
+
+- A: Follow semver — breaking changes are released as major versions; pin to a tested minor and read the changelog before upgrading.
+
+Q: Troubleshooting tip: missing/duplicate role errors?
+
+- A: `RoleError` commonly means a registration or metadata issue — ensure each `metadata.id` is unique and all declared dependencies are registered.
+
+Q: Where to get help or contribute?
+
+- A: Open an issue or PR in the repository and follow `CONTRIBUTING.md` for guidelines.
+
+### metadata.json FAQ (`@sholder/roles`)
+
+Q: What should a basic `metadata.json` include for role execution?
+
+- A: Include execution targets, shared params, and an initial context object. Keep it small and deterministic.
+
+```json
+{
+  "roles": [
+    "CEO",
+    "CTO",
+    "CFO",
+    "COO",
+    "AEO",
+    "Architect",
+    "Planner",
+    "Analyst",
+    "Reviewer",
+    "Executor"
+  ],
+  "params": {
+    "vision": "enterprise-platform",
+    "budget": 5000000
+  },
+  "context": {},
+  "options": {
+    "maxConcurrency": 4,
+    "strict": true,
+    "timeoutMs": 30000,
+    "retryLimit": 0
+  }
+}
+```
+
+Q: How do I run `@sholder/roles` using values from `metadata.json`?
+
+- A: Read the JSON, create a `RoleRegistry` + `Orchestrator` (or `RoleRuntime`), then pass `context` and `params` into `run`/`executeAll`.
+
+```js
+import { readFile } from 'node:fs/promises';
+import { Orchestrator, RoleRegistry, createDefaultAgents } from '@sholder/roles';
+
+const metadata = JSON.parse(await readFile('./metadata.json', 'utf8'));
+
+const registry = new RoleRegistry();
+for (const agent of createDefaultAgents().values()) registry.register(agent);
+
+const orchestrator = new Orchestrator(registry, metadata.options ?? {});
+const report = await orchestrator.run(metadata.roles, {
+  context: metadata.context ?? {},
+  params: metadata.params ?? {},
+});
+
+console.log(report.status);
+```
+
+Q: Can `metadata.json` define only a subset of roles?
+
+- A: Yes. Provide a subset in `roles`; dependencies are resolved by the engine. Ensure all required dependency agents are registered.
+
+Q: Should I store secrets in `metadata.json`?
+
+- A: No. Keep secrets in environment variables or a secret manager; inject into `params` at runtime only when required.
+
+Q: How do I validate `metadata.json` before running orchestration?
+
+- A: Check JSON parsing, ensure `roles` is a non-empty array, and validate option types (`maxConcurrency`, `timeoutMs`, `retryLimit`, `strict`) before execution.
+
+Q: What common mistakes break metadata-driven runs?
+
+- A: Invalid role IDs, missing dependencies in registry, malformed JSON, and passing non-object `context`/`params`.
+
 ## Troubleshooting & tips
 
 - `RoleError` usually means a role was missing, duplicated, or given invalid lifecycle input.

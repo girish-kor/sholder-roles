@@ -4,3 +4,5 @@ coverage/
 *.log
 .env
 .vscode/
+example/metadata.json
+example/package-lock.json

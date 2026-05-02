@@ -1,0 +1,13 @@
+{
+  "name": "sholder-roles",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "mupdater.js",
+  "scripts": {
+    "generate": "node generate.js",
+    "start": "node updater.js"
+  },
+  "dependencies": {
+    "@sholder/roles": "^1.0.0"
+  }
+}
